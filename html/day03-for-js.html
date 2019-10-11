@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>js 提高</title>
+</head>
+<body>
+<script>
+
+    /*
+    * this 指向问题
+    *
+    * this 指向调用改函数对象的对象
+    * */
+    var name = 'The window';
+    var obj = {
+        name: 'The obj',
+        getName: function () {
+            return function () {
+                return this.name;
+            }
+        }
+    }
+
+    console.log(obj.getName()()) // 在此处， 看起来貌似像是obj 调用了getName 然后再调用了返回出来的函数
+    // 实际上 上面的式子 等价于
+    a = obj.getName()
+    console.log(a())
+
+</script>
+</body>
+</html>

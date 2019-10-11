@@ -110,7 +110,76 @@
     b() // 2
 
 
-    
+    //2019.10.11
+
+    // 局部变量 在没有引用后会消亡
+    function f2() {
+        var a = 0 // 变量a 在f5 中被引用 而形成闭包
+        function f4() { // 这个函数没有被暴露到外部， 无法形成闭包
+            a++
+            console.log(a)
+        }
+        function f5() { // 这个函数 被return到外部，形成了闭包
+            a--
+            console.log(a)
+        }
+        return f5;
+    }
+
+    /**
+     * 闭包的生命周期， 闭包产生于被定义完时
+     * 闭包结束于嵌套函数成为了垃圾对象时， 也即嵌套函数对象的引用不再引用他时
+     */
+
+
+    //闭包的应用， 自定义js 模块
+
+    function myModule(){
+        var msg = 'my Module';
+        function doSomething() {
+            console.log('doSomething: ' + msg.toUpperCase())
+        }
+        function doOtherthing() {
+            console.log('doOtherthing: ' + msg.toLowerCase())
+        }
+        // 将封装的对象， 变为windows对象的属性
+        window.yyy = {
+            doSomething: doSomething,
+            doOtherthing: doOtherthing
+        }
+
+        //利用对象分封装的方法 将内部方法暴露到外部
+        return {
+            doSomething: doSomething,
+            doOtherthing: doOtherthing
+        }
+
+        //
+
+    }
+    var a = myModule()
+    console.log(window.yyy)
+    window.yyy.doOtherthing()
+    window.yyy.doSomething()
+
+
+
+    a.doSomething();
+    a.doOtherthing();
+
+
+    /*
+    * 闭包缺点: 函数执行完之后 函数内局部变量没有被释放， 占用时间变长
+    * 容易造成内存泄漏
+    *
+    * 解决办法：
+    * 能不用闭包就不用
+    * 及时释放
+    *
+    * */
+
+
+
 
 </script>
 </body>

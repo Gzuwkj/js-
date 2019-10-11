@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>js 提高学习</title>
+</head>
+<body>
+<script>
+    /*
+    *  01 --- 闭包学习 -- 深度理解
+    * */
+
+    /*
+    *概念 --
+    *闭包：闭包是指有权访问另一个作用域的变量的函数，常见方式是在一个函数内部创建另一个函数
+    * 按中文的意思就是关上一个包的意思。
+    * 如果我们把函数的作用域当做是一个包的话，那这个词很形象体现了它的作用 。
+    * 函数的正常的执行流程是当函数中的语句执行完后，程序会自动销毁这个函数的作用域，但是当一个函数中声明了另一个函数，
+    * 并且这个子函数执行时存在引用父函数的变量，就会形成闭包，
+    * 形象点说就相当于把父函数的作用域给关闭了起来，不让程序去销毁它
+    * */
+
+    // 例子
+
+    function f() {
+        let re;
+        var i = 10;
+        function a() {
+            return i;
+        }
+        re = a();
+        return re;
+    }
+
+    console.log(f()); // 10
+
+    // 闭包的好处，就是我们再全局作用域（此处是widow）
+    // 下访问到了局部作用域(a函数)的作用域的值，
+    // 按正常的词法作用域是无法这么做的，但是当我们使用闭包是就可以了
+    // 正常情况下，在全局范围类，是无法直接获得函数类的局部变量，可以通过声明一个全局变量，在函数内被赋值的方式获得
+    // 而这种方法需要在全局中声明一个全局变量，在实际生产中，js框架为避免污染全局变量，常用闭包就能很好的解决这个问题。
+    function f1() {
+        var a = 10;
+        function f2() {
+            console.log(a);
+        }
+        f3(f2);
+    }
+
+    function f3(fn) {
+        fn();
+    }
+    f1(); // 10
+
+    // 应用场景
+    // 例子一： setTimeout
+    function callLater(paramA, paramB, paramC) {
+        /*使用函数表达式创建并放回一个匿名内部函数的引用*/
+        return (function () {
+            /*
+             *这个内部函数将被setTimeout函数执行；
+             *并且当它被执行时，
+             *它能够访问并操作外部函数传递过来的参数
+             **/
+            paramA[paramB] = paramC;
+        });
+    }
+    /*
+     *调用这个函数将在它的执行上下文中创建，并最终返回内部函数对象的引用
+     *传递过来的参数，内部函数在最终被执行时，将使用外部函数的参数
+     *返回的引用被赋予了一个变量
+     **/
+    //var funcRef = callLater(elStyle, "display", "none");
+    /*
+    * 此处 funRef被赋予的值 并不是callLater(elStyle, "display", "none")
+    * 而是 function(){
+    *   elStyle["display"] = "none";
+    * }
+    *  ps: setTimeout 中传入的那个函数， 是没有办法直接传入参数
+    *  这里应用闭包的好处在于 funRef 中的 paramA[paramB] = paramC;这句话会根据传入的值进行变化
+    *   在实际运行过程中， 可以由代码自身更改参数来达到代码重用的效果 更为灵活
+    * */
+    /*调用setTimeout函数，传递内部函数的引用作为第一个参数*/
+    //hideMenu = setTimeout(funcRef, 500);
+
+    //2019-10-10
+
+    /*
+    * 从视频中了解到
+    * 闭包成立条件为 内层嵌套函数调用外层函数的成员变量
+    * 此时，在内层嵌套中所调用的变量会成为闭包，我的理解为 闭包类似于c++中的static关键字
+    * 闭包会阻止系统删除函数中 成为了闭包的变量
+    * */
+
+    function fun1() {
+        var a = 0;
+        function f4() {
+            a++;
+            console.log(a);
+        }
+        return f4;
+    }
+
+
+    var b = fun1();
+    b() // 1
+    b() // 2
+
+
+    
+
+</script>
+</body>
+</html>

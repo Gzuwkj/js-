@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>js 提高</title>
+</head>
+<body>
+<script>
+    /*
+    * 原型链的问题
+    *
+    * 包括三个属性， prototype(显示原型属性) __proto__(隐式原型属性) constructor
+    * */
+
+    /*
+    * 原型年的结构 ---
+    * */
+    // 首先声明一点， 在js中， 函数并不单一是函数， js的函数形象的看作是 c++中 普通函数与类的构造函数的结合体
+    // 因此 new function 带表创建了一个 function的实例化对象 同时我们也可以像普通函数一样调用 function(这里的function 仅仅代表任意一个函数 并非关键词 function)
+    // 创建一个函数
+    function fun() {
+
+    }
+    // 此时我们并未在函数中 添加任何的属性 以及方法
+    // 调用输出
+    console.log(fun);// 某些浏览器可能在控制台中仅会输出 fun(){}
+    // 但是实际上，输出的内容中 会包括 一系列的属性 其中 包括一个prototype 属性
+    console.log(fun.prototype)
+    // 输出出来的 fun.prototype 是一个Object 实例化对象 可以通过 instanceof 查看
+    console.log(fun.prototype instanceof Object) // tue
+
+    //而在fun.prototype 中 包含了一个constructor 属性
+    console.log(fun.prototype.constructor === fun) // true
+    //可知 constructor 指向的恰好与prototype相反
+
+    //上面介绍的是显示原型
+
+    var b = new fun();
+    console.log(b);
+    // 可以看到 b.__proto__ 与fun.prototype 一样
+    console.log(b.__proto__ === fun.prototype) // true
+    // 原型链就在于此
+
+    //原型链初始于构造函数声明于实例化对象
+
+    console.log(fun.prototype.__proto__.__proto__)
+    // 此处用__proto__ 是因为 fun.prototype 是Object的实例化对象 它和 Object.prototype 相等就能证明
+    // 而现在这个式子等于null 就说明 原型链 终止与此处
+    // 从原型链可以看出js的结构 类似与C# 一切对象 都是 Object的子类
+
+    //举个例子
+
+    function fun2() {
+
+    }
+    console.log(fun2.prototype instanceof Object)// true
+    // fun2 的原型是 Object的实例化对象
+    console.log(fun2.prototype === fun.prototype) // false
+    // 而 fun2 和 fun原型不相等 说明 每次创建一个构造函数 Object 都会 实例化一个空的Object对象 作为他的原型
+    console.log(fun2.prototype.__proto__ === fun.prototype.__proto__) // true
+    // 这里却相等 因为 Object 的构造函数的原型只有一个， 不仅仅是自定义的构造函数是这样
+    console.log(Number.prototype.__proto__ === fun.prototype.__proto__) // true
+    console.log(Function.prototype.__proto__ === String.prototype.__proto__) // true
+    // 所以说 js中的 对象源于 Object.prototype, 它是起点
+
+
+    /*
+    * 原型链的作用
+    * */
+
+    // 看个例子
+
+    function fun3() {
+
+    }
+
+    var c = new fun3();
+    var d = new fun3();
+    c.xxx = function () {
+        console.log('c.xxx')
+    }
+    //给c 添加上xxx函数 但是d没有
+
+    c.xxx()
+    // d.xxx()// 此处报错
+    fun3.prototype.rrr = function () {
+        console.log('fun3.rrr');
+    }
+    c.rrr()
+    d.rrr()
+    //两句都执行 所以 原型 可以类比于c++ java 中的继承
+
+    fun3.prototype.xxx = function () {
+        console.log('fun3.rrr');
+    }
+    c.xxx()
+    d.xxx()
+    // 原型链中的 查找方法与函数 时 会优先在当前对象中查找，没有时才会到原型中查找 类比于c++ java的重载
+
+    // __proto__ 引发的问题
+     //在第一个输出
+    console.log(fun)
+    // 中 可以发现 构造函数 也有 __proto__ 属性
+    // 通过上面的解读 可以知道 构造函数的实例化对象 会有 __proto__ 属性 并且这个属性的值和构造函数的prototype 指向同一个地方放
+    // 那么参照这个方式 可以猜测到 构造函数 也是另一个构造函数实例化对象???
+    // 验证
+    console.log(fun.__proto__.constructor)
+    // 通过上式 可以得到构造构造函数的构造函数.... 也就是 Function(){}
+    console.log(Object.__proto__.constructor === Function)
+    console.log(Object instanceof Function)
+    // 可以发现 Object的构造函数 也是Function 的实例化对象
+    // 也就是说 在js中 所有的数据的原型 都是 Object的实例化对象  而 所有的函数 都是 Function的实例化对象
+    /*
+    * 其实不难发现 我们在声明函数的方式
+    * function xxx(){}
+    * 不能看出 在声明的同时 调用了 Function 的构造函数....
+    * */
+
+
+</script>
+</body>
+</html>

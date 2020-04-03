@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>深拷贝 浅拷贝</title>
+</head>
+<body>
+<script>
+    /**
+     * 浅拷贝：
+     *      * 对于引用数据类型 在进行传参 赋值等操作时 实际采用的是对一片内存区域的引用的传递
+     *          即是 虽然进行了赋值传参等操作 但实际上相当于c语言中的指针 传输的仅是指向该内存区域的指针
+     * 深拷贝：
+     *      * 与上述相反 在传递过程中 是另开辟一份内存区域 进行值的复制 可以称为深拷贝
+     */
+    // 先看：
+    let a = 10;
+    let b = a;
+    console.log('a = ' + a); // a = 10
+    console.log('b = ' + b); // b = 10
+    b -= 5;
+    a += 5;
+    console.log('after change a = ' + a); // after change a = 15
+    console.log('after change b = ' + b); // after change b = 5
+    // Number 类型不为引用类型 所以在进行备份后的变量 并不会影响原来的变量
+
+
+    // 浅拷贝
+
+    let obj = {
+        a: 10
+    };
+
+    let obj2 = obj;
+
+    console.log('obj.a = ' + obj.a); //   obj.a = 10
+    console.log('obj2.a = ' + obj2.a); // obj2.a = 10
+
+    obj2.a += 5;
+    console.log('after obj2.a change ->obj2.a = ' + obj2.a); // after obj2.a change ->obj2.a = 15
+    console.log('after obj2.a change ->obj.a = ' + obj.a); //   after obj2.a change ->obj.a = 15
+
+    obj.a = -15;
+    console.log('after obj.a change ->obj.a = ' + obj.a); //    after obj.a change ->obj.a = -15
+    console.log('after obj.a change ->obj2.a = ' + obj2.a); //   after obj.a change ->obj2.a = -15
+    // 如上所述 简单使用 = 对引用数据类型 进行传递 实质上只是在传递指向同一片内存区域的指针的传递(数组也隶属与引用数据类型 所以也是引用数据类型 函数传参时也是如此)
+
+
+    // 深拷贝
+    let obj3 = {
+        a: 15,
+    };
+
+    let obj4 = {};
+    obj4.a = obj3.a;
+
+    console.log('obj3.a = ' + obj3.a); // obj3.a = 15
+    console.log('obj4.a = ' + obj4.a); // obj4.a = 15
+
+    obj4.a = 20;
+    console.log('after obj4.a change obj3.a = ' + obj3.a);
+    // after obj4.a change obj4.a = 15
+    console.log('after obj4.a change obj4.a = ' + obj4.a);
+    // after obj4.a change obj4.a = 20
+    /**
+     * 如上所述，重新声明的obj4并非直接用 = 复制obj3的值 而是先采用字面量的方式声明的另一个内存区域，然后再去进行值的复制
+     * 最后，由于是对不同内存区域的修改，因此不会互相影响
+     */
+
+
+    // deepClone 实现
+
+    function deepClone(obj) {
+        if(obj !== null && typeof  obj !== 'object') return obj;
+        // 判断obj为基本类型 还是引用类型， 且obj不能为null 否则下面的for循环会报错
+        let ret = Array.isArray(obj) ? [] : {};
+        // 判断obj为数组类型还是Object类型
+        if(obj === null) return null;
+        // 防止Array.isArray函数被修改
+        for (let key in obj){
+            if(obj.hasOwnProperty(key)){
+                // 不拷贝obj中继承父类的属性
+                if(obj[key] !== null && typeof obj[key] === 'object')
+                    ret[key] = deepClone(obj[key]); // 递归拷贝
+                else
+                    ret[key] = obj[key];
+            }
+
+        }
+        return ret
+    }
+
+    let obj5 = {
+        a: 6,
+        b: {
+            c: 10
+        }
+    };
+
+    let obj6 = deepClone(obj5);
+
+    obj6.a = 14;
+    obj6.b.c = 16;
+    console.log(obj5);
+    /**
+     * {
+     *     a: 6,
+     *     b: {
+     *         c: 10
+     *     }
+     * }
+     */
+    console.log(obj6);
+    /**
+     * {
+     *     a: 14,
+     *     b: {
+     *         c: 16
+     *     }
+     * }
+     */
+
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        div{
+            height: 1500px;
+        }
+        body{
+            height: 100vh;
+            overflow: auto;
+        }
+        button{
+            position: absolute;
+            top: 10px;
+            left: 60px;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <button >dianji</button>
+</div>
+
+<script>
+    function getNext(arr) {
+        let Next = [],
+            i = 0, j = -1;
+        Next.push(j);
+        while (i < arr.length){
+            if(j === -1 || arr[i] === arr[j]){
+                i++; j++;
+                Next.push(j)
+            }
+            else j = Next[j];
+        }
+        return Next;
+    }
+    function KMP(S, P){
+        let i = 0, j = 0,
+            Next = getNext(P);
+        for(;i < S.length;i++, j++){
+            if(j >= P.length) break;
+            if(S[i] !== P[j]){
+                j = Next[j];
+                if(j === -1){
+                    j = 0;
+                    continue;
+                }
+            }
+        }
+        if(i === S.length) return -1
+        return i - P.length;
+    }
+
+    console.log(KMP('ababddgjkdysasdjhabfc ', 'abf'));
+
+    let t = new Object();
+    t.a = 5;
+    t.b = {
+        a: 6,
+        b: 7
+    }
+    let d = new Object();
+    for(let key in t){
+        d[key] = t[key]
+    }
+
+    d.a = 6;
+    console.log(d)
+    console.log(t)
+    d.b.a = 8
+    console.log(d)
+    console.log(t)
+
+    let btn = document.getElementsByTagName('button')[0]
+    function Handler(fn, wait){
+        let timer = null;
+        return function (event) {
+            if(timer !== null) clearTimeout(timer);
+            timer = setTimeout(fn, wait);
+        }
+    }
+
+    window.addEventListener('scroll', Handler(function () {
+        console.log(document.getElementsByTagName('body')[0].scrollTop)
+    }, 20));
+</script>
+</body>
+</html>
